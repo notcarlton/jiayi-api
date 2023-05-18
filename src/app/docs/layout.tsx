@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Jiayi Software API Docs',
     description: 'API docs for Jiayi Software',
-    url: 'https://jiayi-api.vercel.app/docs',
+    url: 'https://api.jiayi.software/docs',
     type: 'website',
     images:
       'https://cdn.discordapp.com/icons/1076188174407176212/c42955c501c842e06248b294a81bd0ab.png',

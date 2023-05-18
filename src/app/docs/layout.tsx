@@ -1,14 +1,13 @@
 import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import Head from 'next/head';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Jiayi Docs',
-  description: 'Jiayi api docs',
+  title: 'Jiayi Software API Docs',
+  description: 'Jiayi Software API docs',
   openGraph: {
-    title: 'Jiayi Docs',
+    title: 'Jiayi Software API Docs',
     description: 'API docs for Jiayi Software',
     url: 'https://jiayi-api.vercel.app/docs',
     type: 'website',

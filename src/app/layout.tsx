@@ -1,14 +1,11 @@
 import { Metadata } from 'next';
 import './globals.css';
-import { Inter } from 'next/font/google';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Jiayi Software API',
+  title: 'api.jiayi.software',
   description: 'Jiayi Software API',
   openGraph: {
-    title: 'Jiayi Software API',
+    title: 'api.jiayi.software',
     description: 'API routes for Jiayi Software',
     url: 'https://api.jiayi.software/docs',
     type: 'website',
@@ -28,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body className={inter.className}>{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

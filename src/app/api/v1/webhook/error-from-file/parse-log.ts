@@ -1,4 +1,4 @@
-import { IPostSchema, postSchema } from '../error/validate';
+import { IPostSchema, schema } from '../error/validate';
 interface ILogData {
   log_messages: ILogMsg[];
   user?: {

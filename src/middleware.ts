@@ -1,28 +1,34 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { env } from './env.mjs';
+import rateLimit from '~/utils/rate-limit';
+import { NextApiResponse } from 'next';
 
-// This function can be marked `async` if using `await` inside
-export function middleware(request: NextRequest) {
-  const APP_HASH = request.headers.get('APP_HASH');
-  if (
-    process.env.NODE_ENV !== 'development' &&
-    (!APP_HASH || !env.APP_HASHES.includes(APP_HASH.toString()))
-  )
+const limiter = rateLimit({
+  interval: 60 * 1000, // 60 seconds
+  uniqueTokenPerInterval: 500, // Max 500 users per second
+});
+
+export const middleware = async (req: NextRequest, res: NextApiResponse) => {
+  const { isRateLimited, limit, remaining } = await limiter.check(
+    res,
+    3,
+    'CACHE_TOKEN'
+  );
+  if (isRateLimited) {
+    const responseHeaders = new Headers();
+
+    responseHeaders.set('X-RateLimit-Limit', limit.toString());
+    responseHeaders.set('X-RateLimit-Remaining', remaining.toString());
+
     return NextResponse.json(
-      {
-        success: false,
-        message: !APP_HASH ? 'Missing "auth" header' : 'Invalid APP_HASH',
-      },
-      {
-        status: !APP_HASH ? 401 : 403,
-      }
+      { error: 'Rate limit exceeded' },
+      { status: 429, headers: responseHeaders }
     );
+  }
 
-  return NextResponse.next();
-}
+  NextResponse.next();
+};
 
-// See "Matching Paths" below to learn more
 export const config = {
   matcher: '/api/:path*',
 };

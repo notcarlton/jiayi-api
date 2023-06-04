@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { env } from '~/env.mjs';
-import { webhookDataSchema } from '../validate';
+import { schema } from './validate';
 
 export async function POST(request: NextRequest) {
   const data = await request.formData();
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     payload_json: data.get('payload_json'),
   };
 
-  const safeResult = webhookDataSchema.safeParse(
+  const safeResult = schema.safeParse(
     JSON.parse(queryData.payload_json?.valueOf().toString() || '{}')
   );
   if (!queryData.file || !queryData.payload_json || !safeResult.success) {

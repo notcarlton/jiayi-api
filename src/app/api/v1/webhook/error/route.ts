@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { IPostSchema, postSchema } from './validate';
+import { IPostSchema, schema } from './validate';
 
 import { env } from '~/env.mjs';
 import type { IWebhookData } from '../validate';
 
 export async function POST(req: NextRequest) {
-  const result = postSchema.safeParse(await req.json());
+  const result = schema.safeParse(await req.json());
 
   if (!result.success) {
     return NextResponse.json(

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const postSchema = z.object({
+export const schema = z.object({
   user: z
     .object({
       name: z.string(),
@@ -23,4 +23,4 @@ export const postSchema = z.object({
   ),
 });
 
-export type IPostSchema = z.infer<typeof postSchema>;
+export type IPostSchema = z.infer<typeof schema>;

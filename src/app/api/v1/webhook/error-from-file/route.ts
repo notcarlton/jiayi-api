@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { env } from '~/env.mjs';
-import { IWebhookData } from '../validate';
+import { IWebhookData } from './validate';
 import { generateError } from '../error/route';
 import { parseLog } from './parse-log';
 

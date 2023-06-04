@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { type IWebhookData, webhookDataSchema } from './validate';
+import { type IWebhookData, schema } from './validate';
 
 import { env } from '~/env.mjs';
+import rateLimit from '~/utils/rate-limit';
+import { NextApiResponse } from 'next';
 
-export async function POST(req: NextRequest) {
-  const result = webhookDataSchema.safeParse(await req.json());
+export async function POST(req: NextRequest, res: NextApiResponse) {
+  const result = schema.safeParse(await req.json());
 
   if (!result.success) {
     return NextResponse.json(

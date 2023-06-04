@@ -4,7 +4,6 @@ import { cache } from 'react';
 
 export interface IParams {
   route: string[];
-  // data: IAPIRoute;
 }
 
 export const processSubroutes = cache(

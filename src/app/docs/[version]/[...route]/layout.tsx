@@ -6,7 +6,7 @@ export interface IParams {
   route: string[];
 }
 
-export const processSubroutes = cache(
+const processSubroutes = cache(
   (routes: IAPIRoute[], parentRoutes?: string[]) => {
     let newData: IParams[] = [];
 

@@ -2,7 +2,7 @@ import { IPostSchema, schema } from '../error/validate';
 interface ILogData {
   log_messages: ILogMsg[];
   user?: {
-    username: string;
+    name: string;
     discrim: string;
   };
   error: {
@@ -55,7 +55,7 @@ export function parseLog(file: string): ILogData {
         if (discordUserMatch) {
           const user = discordUserMatch[0].split('#');
           discordUser = {
-            username: user[0],
+            name: user[0],
             discrim: user[1],
           };
           return;

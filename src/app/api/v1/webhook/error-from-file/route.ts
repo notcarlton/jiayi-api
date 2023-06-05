@@ -21,26 +21,19 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const queryData = {
-    file: data.get('file'),
-    isAnonymous: data.get('isAnonymous'),
-  };
+  const queryFile = data.get('file');
 
-  if (!queryData.file || !queryData.isAnonymous) {
+  if (!queryFile) {
     return NextResponse.json(
       {
         success: false,
         message: 'Invalid request',
         errors: [
-          !queryData.file && {
+          {
             path: ['file'],
             message: 'Expected file',
           },
-          !queryData.isAnonymous && {
-            path: ['isAnonymous'],
-            message: 'Expected boolean',
-          },
-        ].filter(Boolean),
+        ],
       },
       {
         status: 400,
@@ -49,7 +42,7 @@ export async function POST(request: NextRequest) {
   }
 
   // @ts-ignore
-  const result = await parseLog(await queryData.file.text());
+  const result = await parseLog(await queryFile.text());
 
   const postData: IWebhookData = generateError({
     main_error: {
@@ -61,12 +54,12 @@ export async function POST(request: NextRequest) {
       location: x.sender,
       msg: x.msg,
     })),
-    ...(queryData.isAnonymous === 'false' && result.user),
+    user: result.user,
   });
 
   const formData = new FormData();
-  formData.append('file', queryData.file);
   formData.append('payload_json', JSON.stringify(postData));
+  formData.append('file', queryFile);
 
   const fileResponse = await fetch(env.DISCORD_WEBHOOK, {
     method: 'POST',

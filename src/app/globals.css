@@ -10,6 +10,10 @@
   --accent: #ce3a3a;
 }
 
+* {
+  font-size: 13px !important;
+}
+
 body {
   background-color: var(--bg-primary);
   color: var(--accent);
@@ -17,12 +21,10 @@ body {
   font-weight: bolder;
 
   margin: 8px;
+
+  line-height: normal !important;
 }
 
 pre {
-  font-family: monospace;
   white-space: pre;
-
-  line-height: 1.156;
-  margin: 1em 0;
 }

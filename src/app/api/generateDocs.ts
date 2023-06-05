@@ -2,11 +2,40 @@ import path from 'path';
 import { z } from 'zod';
 
 import { getDirectories } from './utils';
-import { schema } from './v1/webhook/validate';
 import { cache } from 'react';
 import { generateSchema as genSchem } from '@anatine/zod-openapi';
 
 const API_DIR = path.join(process.cwd(), 'src/app/api/');
+interface IROUTE_DATA {
+  routes?: Record<string, IROUTE_DATA>;
+  validate: any;
+  route: any;
+}
+
+const GET_DOC_DATA = async () => {
+  return {
+    v1: {
+      webhook: {
+        validate: await import('./v1/webhook/validate'),
+        route: await import('./v1/webhook/route'),
+        routes: {
+          error: {
+            validate: await import('./v1/webhook/error/validate'),
+            route: await import('./v1/webhook/error/route'),
+          },
+          'error-from-file': {
+            validate: await import('./v1/webhook/error-from-file/validate'),
+            route: await import('./v1/webhook/error-from-file/route'),
+          },
+          file: {
+            validate: await import('./v1/webhook/file/validate'),
+            route: await import('./v1/webhook/file/route'),
+          },
+        },
+      },
+    },
+  } satisfies Record<IVersionKey, Record<string, IROUTE_DATA>>;
+};
 
 export type IVersionKey = `v${number}`;
 
@@ -22,7 +51,10 @@ export interface IAPIRoute {
 export interface IAPIRouteData {
   meta: IAPIRouteMetaData;
   validation_schemas: {
-    schema: z.AnyZodObject;
+    // @ts-ignore idc about types rn man nothin makes sense bru its so dumb
+    schema?: z.AnyZodObject;
+    // @ts-ignore
+    schema_string?: string;
     [key: string]: z.Schema;
   };
 }
@@ -69,22 +101,57 @@ export const getDocsRoute = async (version: IVersionKey, routes: string[]) => {
   return doc;
 };
 
+function interleave<T>(arr: T[], thing: T): T[] {
+  return ([] as T[]).concat(...arr.map(n => [n, thing])).slice(0, -1);
+}
+
+function deepObjKey<T extends Record<string | number | symbol, any>>(
+  obj: T,
+  keys: string[]
+): any {
+  return keys.reduce(
+    (value, key) =>
+      value && value[key] !== null && value[key] !== undefined
+        ? value[key]
+        : null,
+    obj
+  );
+}
+
 async function generateSubroutes(api_path: string): Promise<IAPIRoute[]> {
+  const DOC_DATA = await GET_DOC_DATA();
+
   let new_routes: IAPIRoute[] = [];
 
   const routes = await getDirectories(api_path);
   for (const i in routes) {
     const route = routes[i];
 
+    const shortPath = api_path.match(/src(\\|\/)app(\\|\/)api(\\|\/).+$/)?.[0];
+    if (!shortPath) throw new Error('huh');
+
+    let objPath = shortPath.split(/\\|\//).slice(3);
+    const version = objPath.shift();
+
+    if (!version || !/v\d+/.test(version || ''))
+      throw new Error('uhhh dumb invalid version');
+
+    objPath.push(route);
+    objPath = interleave(objPath, 'routes');
+    objPath.unshift(version);
+
+    const data = deepObjKey(DOC_DATA, objPath) as IROUTE_DATA;
+
     let newRoute: IAPIRoute = {
       name: route,
-      routes: await generateSubroutes(path.join(api_path, route)),
+      routes: await generateSubroutes(path.resolve(api_path, route)),
       data: {
         meta: {
-          desc: 'Test',
+          ...data.route.meta,
         },
         validation_schemas: {
-          schema,
+          schema_string: data.validate.schema_string,
+          schema: data.validate.schema,
         },
       },
     };

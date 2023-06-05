@@ -3,6 +3,7 @@ import { env } from '~/env.mjs';
 import { IWebhookData } from './validate';
 import { generateError } from '../error/route';
 import { parseLog } from './parse-log';
+import { IAPIRouteMetaData } from '~/app/api/generateDocs';
 
 export async function POST(request: NextRequest) {
   let data: FormData;
@@ -82,3 +83,7 @@ export async function POST(request: NextRequest) {
     }
   );
 }
+
+export const meta: IAPIRouteMetaData = {
+  desc: 'Powerful webhook post, uploading both file, and auto-parsing content to create a data embed (also sent to the webhook)',
+};

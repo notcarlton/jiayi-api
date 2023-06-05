@@ -28,11 +28,17 @@ export default async function Routes({
 
   if (!data) return <div>It seems no data for this route was found!</div>;
 
-  const schemas: { key: string; schema: ReturnType<typeof generateSchema> }[] =
-    Object.values(data.data.validation_schemas).map(x => ({
-      schema: generateSchema(x as z.AnyZodObject),
-      key: generateHash(JSON.stringify(x)).toString(),
-    }));
+  const schemas: {
+    key: string;
+    schema: ReturnType<typeof generateSchema> | string;
+  }[] = Object.values(data.data.validation_schemas)
+    .filter(Boolean)
+    .map(x => {
+      return {
+        schema: typeof x === 'string' ? x : generateSchema(x as z.AnyZodObject),
+        key: generateHash(JSON.stringify(x)).toString(),
+      };
+    });
 
   // If type is object, it has properties
   // If type is array, it has items
@@ -64,6 +70,17 @@ export default async function Routes({
         <p>Schemas:</p>
         <div className='ml-4 py-2 flex flex-col gap-2'>
           {schemas.map(({ key, schema }) => {
+            if (typeof schema === 'string') {
+              return (
+                <pre
+                  key={key}
+                  className='p-4 border-bg-tertiary border-2 w-[max-content]'
+                >
+                  {schema}
+                </pre>
+              );
+            }
+
             return (
               <div
                 key={key}

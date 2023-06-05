@@ -4,6 +4,7 @@ import { type IWebhookData, schema } from './validate';
 import { env } from '~/env.mjs';
 import rateLimit from '~/utils/rate-limit';
 import { NextApiResponse } from 'next';
+import { IAPIRouteMetaData } from '~/app/api/generateDocs';
 
 export async function POST(req: NextRequest, res: NextApiResponse) {
   const result = schema.safeParse(await req.json());
@@ -42,3 +43,7 @@ export async function POST(req: NextRequest, res: NextApiResponse) {
     }
   );
 }
+
+export const meta: IAPIRouteMetaData = {
+  desc: 'Raw post request to protected discord webhook',
+};

@@ -65,7 +65,7 @@ export function ObjectSchema({
   prevKey?: string;
 }) {
   return (
-    <div className='ml-4'>
+    <div className='ml-4 my-2 p-2 border-bg-secondary border-l-2 w-[max-content]'>
       {Object.entries(data.properties).map(([key, value]) => {
         return (
           <div

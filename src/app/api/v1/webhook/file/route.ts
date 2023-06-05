@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { env } from '~/env.mjs';
 import { schema } from './validate';
+import { IAPIRouteMetaData } from '~/app/api/generateDocs';
 
 export async function POST(request: NextRequest) {
   const data = await request.formData();
@@ -66,3 +67,7 @@ export async function POST(request: NextRequest) {
     }
   );
 }
+
+export const meta: IAPIRouteMetaData = {
+  desc: 'Upload file to webhook',
+};

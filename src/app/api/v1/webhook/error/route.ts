@@ -3,6 +3,7 @@ import { IPostSchema, schema } from './validate';
 
 import { env } from '~/env.mjs';
 import type { IWebhookData } from '../validate';
+import { IAPIRouteMetaData } from '~/app/api/generateDocs';
 
 export async function POST(req: NextRequest) {
   const result = schema.safeParse(await req.json());
@@ -95,3 +96,7 @@ export function generateError(query: IPostSchema) {
 
   return data;
 }
+
+export const meta: IAPIRouteMetaData = {
+  desc: 'Send an error embed to the webhook, with automatic formatting (just pass in data objects as seen in schema)',
+};

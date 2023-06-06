@@ -22,6 +22,8 @@ const _updateAuth =
   'http://schemas.microsoft.com/msus/2014/10/WindowsUpdateAuthorization';
 
 export async function GET(req: NextRequest, res: NextApiResponse) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
   const urlSearchParams = new URLSearchParams(req.nextUrl.search);
   const params = Object.fromEntries(urlSearchParams.entries());
   const result = schema.safeParse(params);

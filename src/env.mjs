@@ -6,9 +6,11 @@ export const env = createEnv({
     DISCORD_WEBHOOK: z
       .string()
       .regex(/https:\/\/discord.com\/api\/webhooks\/\d+\/.+/),
+    NODE_ENV: z.enum(['development', 'production']),
   },
   client: {},
   runtimeEnv: {
     DISCORD_WEBHOOK: process.env.DISCORD_WEBHOOK,
+    NODE_ENV: process.env.NODE_ENV,
   },
 });

@@ -8,8 +8,8 @@ import { generateSchema as genSchem } from '@anatine/zod-openapi';
 const API_DIR = path.join(process.cwd(), 'src/app/api/');
 interface IROUTE_DATA {
   routes?: Record<string, IROUTE_DATA>;
-  validate: any;
-  route: any;
+  validate?: any;
+  route?: any;
 }
 
 const GET_DOC_DATA = async () => {
@@ -30,6 +30,14 @@ const GET_DOC_DATA = async () => {
           file: {
             validate: await import('./v1/webhook/file/validate'),
             route: await import('./v1/webhook/file/route'),
+          },
+        },
+      },
+      minecraft: {
+        routes: {
+          download_url: {
+            validate: await import('./v1/minecraft/download_url/validate'),
+            route: await import('./v1/minecraft/download_url/route'),
           },
         },
       },
@@ -147,11 +155,11 @@ async function generateSubroutes(api_path: string): Promise<IAPIRoute[]> {
       routes: await generateSubroutes(path.resolve(api_path, route)),
       data: {
         meta: {
-          ...data.route.meta,
+          ...data.route?.meta,
         },
         validation_schemas: {
-          schema_string: data.validate.schema_string,
-          schema: data.validate.schema,
+          schema_string: data.validate?.schema_string,
+          schema: data.validate?.schema,
         },
       },
     };

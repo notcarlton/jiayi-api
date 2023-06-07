@@ -44,7 +44,6 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
     result.data.update_id ||
     //                                              v Can safely ignore because zod will validate this
     (await generateUpdateId(result.data.version || '', result.data.arch));
-
   try {
     if (!update_id) throw new Error('Version not found');
 
@@ -163,7 +162,7 @@ interface IW10Hashes {
 async function generateUpdateId(version: string, arch: ISchema['arch']) {
   const data = (await fetch(
     'https://raw.githubusercontent.com/MinecraftBedrockArchiver/Metadata/master/w10_meta.json',
-    { next: { revalidate: 24 * 60 * 60 * 1000 } } // Every day
+    { next: { revalidate: 3 * 60 * 60 * 1000 } }
   ).then(res => res.json())) as IW10Meta;
 
   const versionKey = Object.keys(data)

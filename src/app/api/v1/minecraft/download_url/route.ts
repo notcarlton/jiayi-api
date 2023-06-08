@@ -161,8 +161,9 @@ interface IW10Hashes {
 
 async function generateUpdateId(version: string, arch: ISchema['arch']) {
   const data = (await fetch(
-    'https://raw.githubusercontent.com/MinecraftBedrockArchiver/Metadata/master/w10_meta.json',
-    { next: { revalidate: 3 * 60 * 60 * 1000 } }
+    'https://raw.githubusercontent.com/MinecraftBedrockArchiver/Metadata/master/w10_meta.json'
+    // { next: { revalidate: 3 * 60 * 60 * 1000 } }
+    // FIX: Revalidation doesn't seem to work in nextjs right now, so temporarily disabling (it always hits the cache, and never revalidates)
   ).then(res => res.json())) as IW10Meta;
 
   const versionKey = Object.keys(data)

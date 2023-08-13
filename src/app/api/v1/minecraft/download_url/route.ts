@@ -1,11 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { schema, ISchema } from './validate';
-
-import { minify } from 'xml-minifier';
-
-import { NextApiResponse } from 'next';
-import { IAPIRouteMetaData } from '~/app/api/generateDocs';
 import { XMLParser } from 'fast-xml-parser';
+import { NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
+import { minify } from 'xml-minifier';
+import { IAPIRouteMetaData } from '~/app/api/generateDocs';
+
+import { ISchema, schema } from './validate';
 
 const _downloadUrl =
   'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured';
@@ -26,13 +25,13 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
 
   const urlSearchParams = new URLSearchParams(req.nextUrl.search);
   const params = Object.fromEntries(urlSearchParams.entries());
-  const result = schema.safeParse(params);
+  const schemaResult = schema.safeParse(params);
 
-  if (!result.success) {
+  if (!schemaResult.success) {
     return NextResponse.json(
       {
         message: 'Invalid request',
-        errors: result.error.issues,
+        errors: schemaResult.error.issues,
       },
       {
         status: 400,
@@ -41,9 +40,12 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
   }
 
   const update_id =
-    result.data.update_id ||
+    schemaResult.data.update_id ||
     //                                              v Can safely ignore because zod will validate this
-    (await generateUpdateId(result.data.version || '', result.data.arch));
+    (await generateUpdateId(
+      schemaResult.data.version || '',
+      schemaResult.data.arch
+    ));
   try {
     if (!update_id) throw new Error('Version not found');
 
@@ -74,6 +76,9 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
 
     if (!url && !url['Url']) throw new Error('No url found');
 
+    if (schemaResult.data.redirect) {
+      return NextResponse.redirect(url['Url']);
+    }
     return NextResponse.json(
       {
         success: true,
@@ -85,6 +90,8 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
     );
   } catch (err: any) {
     console.error(err);
+
+    // Return this even if redirect
     return NextResponse.json(
       {
         success: false,

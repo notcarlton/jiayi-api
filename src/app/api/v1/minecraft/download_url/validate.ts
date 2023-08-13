@@ -1,5 +1,7 @@
 import { z } from 'zod';
+
 import { extendApi as v } from '@anatine/zod-openapi';
+
 const versionArchSchema = z.object({
   version: z.string().regex(/^(\d+\.){3}(\d+)$/),
   arch: z.enum(['x64', 'x86', 'arm']),
@@ -14,9 +16,17 @@ const updateIDSchema = z.object({
     .length(36),
 });
 
+const defaultsSchema = z.object({
+  redirect: z
+    .string()
+    .optional()
+    .refine(x => x === 'true' || x === '1'),
+});
+
 export const schema = v(
   versionArchSchema
     .merge(updateIDSchema)
+    .merge(defaultsSchema)
     .partial()
     .refine(
       data => (data.arch && data.version) || data.update_id,

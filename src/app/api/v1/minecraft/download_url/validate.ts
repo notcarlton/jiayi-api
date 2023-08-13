@@ -18,9 +18,12 @@ const updateIDSchema = z.object({
 
 const defaultsSchema = z.object({
   redirect: z
-    .string()
+    .string({ description: '(true | 1)' })
     .optional()
-    .refine(x => x === 'true' || x === '1'),
+    .refine(
+      x => x === 'true' || x === '1',
+      'Invalid redirect param (true | 1)'
+    ),
 });
 
 export const schema = v(
